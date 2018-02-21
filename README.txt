@@ -1,6 +1,13 @@
 This project is originally the 2018 winter assignment of problem solving class in Nanjing University. 
 It is coded by NSKernel and is licensed under GPL v3.
 
+Project Highlight:
+1. Implemented in C++ with optimized logging system.
+2. Non-static base directory. You can set the base directory when the server fires up.
+3. Support a wide variety of content type including ttf, mp3, etc., thus the example game "THE EVOLUTION OF TRUST" can run with beautiful fonts and sound effects.
+4. Industrial-level code format, good for your eyes;-)
+5. EASTER EGG: Partly compiled with RFC2324. Try trigger it (x).
+
 Build:
 The project is created with Visual Studio 2017 as a Linux project. Click the build tab in VS2017 and click build solution (You have to connect to a real Linux machine or WSL via SSH). You may also write your own makefile and compile manually. 
 
