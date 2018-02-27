@@ -37,6 +37,7 @@ public:
 	void RegisterCallbackFunction(std::string Path, HTTPLayer::HTTPResponse(*Function)(HTTPLayer::HTTPRequest));
 	HTTPLayer::HTTPResponse (*FindCallback(std::string Path)) (HTTPLayer::HTTPRequest);
 	void Start();
+	void doit(TCPStream &ClientStream);
 };
 
 #endif

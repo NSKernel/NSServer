@@ -91,8 +91,8 @@ HTTPLayer::HTTPResponse AddCallback(HTTPLayer::HTTPRequest Request)
 int main()
 {
 	std::cout << "NSServer [Version 0.1]\nCopyright (C) 2018 NSKernel. All rights reserved.\n\nThis project is licensed under GPL v3.\n\nSETUP: What is the base directory of the server?\nBase directory> ";
-	std::cin >> BaseDirectory;
-	
+	// std::cin >> BaseDirectory;
+	BaseDirectory = "/mnt/c/MyData/Workspace/NSServer/NSServer/readme/";
 	Logging::Log("STATUS", "Base directory is set to " + BaseDirectory);
 	HTTPServer Server(8080);
 	Server.RegisterCallbackFunction("Default", FileCallback);

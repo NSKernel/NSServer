@@ -11,12 +11,15 @@
   Author: NSKernel
 ==================================================*/
 
+
+#include <thread>
 #include <memory>
-#include "ThreadPool.h"
+#include <pthread.h>
 #include "Global.h"
 #include "HTTPLayer.h"
 #include "HTTPServer.h"
 #include "HTCPCPLayer.h"
+#include "ThreadPool.h"
 
 HTTPServer::HTTPServer(int Port) : TCPServer(Port)
 {
@@ -44,6 +47,13 @@ HTTPLayer::HTTPResponse(*HTTPServer::FindCallback(std::string Path)) (HTTPLayer:
 void HTTPServer::RegisterCallbackFunction(std::string Path, HTTPLayer::HTTPResponse(*Function)(HTTPLayer::HTTPRequest))
 {
 	CallbackFunctions.push_back(Callback{ Path, Function });
+}
+
+void HTTPServer::doit(TCPStream &ClientStream) {
+	HTTPLayer::HTTPRequest Request = HTTPLayer::HTTPParseRequest(ClientStream);
+	HTTPLayer::HTTPResponse(*CallbackFunction) (HTTPLayer::HTTPRequest) = FindCallback(Request.Path);
+	HTTPLayer::HTTPResponse Response = (*CallbackFunction)(Request);
+	ClientStream << HTTPLayer::HTTPMakeResponse(Response);
 }
 
 void HTTPServer::Start() {
