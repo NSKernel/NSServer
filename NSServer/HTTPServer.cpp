@@ -11,6 +11,8 @@
   Author: NSKernel
 ==================================================*/
 
+#include <memory>
+#include "ThreadPool.h"
 #include "Global.h"
 #include "HTTPLayer.h"
 #include "HTTPServer.h"
@@ -46,12 +48,19 @@ void HTTPServer::RegisterCallbackFunction(std::string Path, HTTPLayer::HTTPRespo
 
 void HTTPServer::Start() {
 	SignalHandler::RegisterInterruptSignalHandler();
-	while (!SignalHandler::ReadInterruptBit()) {
-		TCPStream ClientStream = AcceptedClient();
-		HTTPLayer::HTTPRequest Request = HTTPLayer::HTTPParseRequest(ClientStream);
-		HTTPLayer::HTTPResponse (*CallbackFunction) (HTTPLayer::HTTPRequest) = FindCallback(Request.Path);
+	ThreadPool<10> pool;
+
+	auto processor = [this](std::shared_ptr<TCPStream> ClientStream) {
+		HTTPLayer::HTTPRequest Request = HTTPLayer::HTTPParseRequest(*ClientStream);
+		HTTPLayer::HTTPResponse(*CallbackFunction) (HTTPLayer::HTTPRequest) = FindCallback(Request.Path);
 		HTTPLayer::HTTPResponse Response = (*CallbackFunction)(Request);
-		ClientStream << HTTPLayer::HTTPMakeResponse(Response);
+		*ClientStream << HTTPLayer::HTTPMakeResponse(Response);
+	};
+
+	while (!SignalHandler::ReadInterruptBit()) {
+		std::shared_ptr<TCPStream> ClientStream(new TCPStream(AcceptedClient()));
+		pool.submitTask(processor, std::move(ClientStream));
 	}
+
 	Logging::Log("STATUS", "HTTP server closed.");
 }
