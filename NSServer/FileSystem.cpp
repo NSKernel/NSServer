@@ -57,6 +57,11 @@ std::string File::ReadAll()
 	return oss.str();
 }
 
+std::string File::GetFileName()
+{
+	return FileName;
+}
+
 size_t File::Size() 
 {
 	return FileStatus->st_size;

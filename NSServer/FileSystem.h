@@ -29,6 +29,7 @@ public:
 	// APIs
 	std::string FileExtensionName();
 	std::string ReadAll();
+	std::string GetFileName();
 
 	size_t Size();
 

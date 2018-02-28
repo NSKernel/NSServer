@@ -19,8 +19,10 @@
 #include "HTTPLayer.h"
 #include "HTTPServer.h"
 #include "Global.h"
+//#include <boost/python.hpp>
 
 std::string BaseDirectory;
+//using namespace boost::python;
 
 HTTPLayer::HTTPResponse Generate404Response(HTTPLayer::HTTPRequest Request)
 {
@@ -51,7 +53,7 @@ HTTPLayer::HTTPResponse FileCallback(HTTPLayer::HTTPRequest Request)
 
 	ReturnResponse.HTTPStatus = 200;
 	ReturnResponse.Data = RequestedFile.ReadAll();
-
+	
 	// Build header
 	std::string FileExtensionName = RequestedFile.FileExtensionName();
 	auto Iterator = HTTPLayer::HTTPFileType.find(FileExtensionName);
@@ -59,6 +61,11 @@ HTTPLayer::HTTPResponse FileCallback(HTTPLayer::HTTPRequest Request)
 		ReturnResponse.HeaderKeys.push_back(HTTPLayer::HTTPKeyEntry{ "Content-Type", Iterator->second });
 	else
 		ReturnResponse.HeaderKeys.push_back(HTTPLayer::HTTPKeyEntry{ "Content-Type", "application/octet-stream" });
+	
+//	python::Py_Initialize();
+//	PyRun_SimpleString("print 'hello'");
+//	Py_Finalize();
+
 	ReturnResponse.HeaderKeys.push_back(HTTPLayer::HTTPKeyEntry{ "Content-Length", std::to_string(ReturnResponse.Data.size()) });
 
 
@@ -79,7 +86,10 @@ HTTPLayer::HTTPResponse AddCallback(HTTPLayer::HTTPRequest Request)
 	}
 	else
 	{
-		ResponseString = std::to_string(atoi(Request.GetData[0].KeyData.c_str())) + " + " + std::to_string(atoi(Request.GetData[1].KeyData.c_str())) + " = " + std::to_string(atoi(Request.GetData[0].KeyData.c_str()) + atoi(Request.GetData[1].KeyData.c_str()));
+		ResponseString = std::to_string(atoi(Request.GetData[0].KeyData.c_str())) 
+			+ " + " + std::to_string(atoi(Request.GetData[1].KeyData.c_str())) 
+			+ " = " + std::to_string(atoi(Request.GetData[0].KeyData.c_str()) 
+				+ atoi(Request.GetData[1].KeyData.c_str()));
 	}
 
 	ReturnResponse.HeaderKeys.push_back(HTTPLayer::HTTPKeyEntry{ "Content-Length", std::to_string(ResponseString.size()) });
@@ -91,11 +101,12 @@ HTTPLayer::HTTPResponse AddCallback(HTTPLayer::HTTPRequest Request)
 int main()
 {
 	std::cout << "NSServer [Version 0.1]\nCopyright (C) 2018 NSKernel. All rights reserved.\n\nThis project is licensed under GPL v3.\n\nSETUP: What is the base directory of the server?\nBase directory> ";
-	std::cin >> BaseDirectory;
+//	std::cin >> BaseDirectory;
+	BaseDirectory = "/home/broccoli/assiduous/";
 	Logging::Log("STATUS", "Base directory is set to " + BaseDirectory);
 	HTTPServer Server(8080);
 	Server.RegisterCallbackFunction("Default", FileCallback);
 	Server.RegisterCallbackFunction("add", AddCallback);
 	Server.Start();
-    return 0;
+	return 0;
 }

@@ -55,7 +55,9 @@ namespace HTTPLayer
 		{ "gif" ,"image/gif" },
 		{ "txt", "text/plain" },
 		{ "mp3", "audio/mp3" },
-		{ "ttf", "font/ttf" }
+		{ "ttf", "font/ttf" },
+		{ "pdf", "application/pdf" },
+		{ "pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation" }
 	};
 
 	struct HTTPKeyEntry
