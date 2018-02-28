@@ -60,16 +60,17 @@ void HTTPServer::Start() {
 	SignalHandler::RegisterInterruptSignalHandler();
 	ThreadPool<10> pool;
 
-	auto processor = [this](std::shared_ptr<TCPStream> ClientStream) {
-		HTTPLayer::HTTPRequest Request = HTTPLayer::HTTPParseRequest(*ClientStream);
+	auto processor = [this](int Connection) {
+		TCPStream ClientStream(Connection);
+		HTTPLayer::HTTPRequest Request = HTTPLayer::HTTPParseRequest(ClientStream);
 		HTTPLayer::HTTPResponse(*CallbackFunction) (HTTPLayer::HTTPRequest) = FindCallback(Request.Path);
 		HTTPLayer::HTTPResponse Response = (*CallbackFunction)(Request);
-		*ClientStream << HTTPLayer::HTTPMakeResponse(Response);
+		ClientStream << HTTPLayer::HTTPMakeResponse(Response);
 	};
 
 	while (!SignalHandler::ReadInterruptBit()) {
-		std::shared_ptr<TCPStream> ClientStream(new TCPStream(AcceptedClient()));
-		pool.submitTask(processor, std::move(ClientStream));
+		int Connection = AcceptedClient();
+		pool.submitTask(processor, Connection);
 	}
 
 	Logging::Log("STATUS", "HTTP server closed.");

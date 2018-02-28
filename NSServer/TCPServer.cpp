@@ -88,7 +88,7 @@ void TCPServer::InitializeServerFileDescriptor(int Port)
 }
 
 
-TCPStream TCPServer::AcceptedClient()
+int TCPServer::AcceptedClient()
 {
 	struct sockaddr_in ClientAddress;
 	socklen_t Length = sizeof(ClientAddress);
@@ -101,5 +101,5 @@ TCPStream TCPServer::AcceptedClient()
 		Logging::Log("ERROR", "Failed to accept client.");
 	}
 
-	return TCPStream(Connection);
+	return Connection;
 }

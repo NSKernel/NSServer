@@ -74,7 +74,7 @@ public:
 	~TCPServer();
 
 	void InitializeServerFileDescriptor(int Port);
-	TCPStream AcceptedClient();
+	int AcceptedClient();
 };
 
 #endif
