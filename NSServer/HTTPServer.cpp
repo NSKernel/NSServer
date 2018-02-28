@@ -15,6 +15,8 @@
 #include <thread>
 #include <memory>
 #include <pthread.h>
+#include <string>
+#include <sstream>
 #include "Global.h"
 #include "HTTPLayer.h"
 #include "HTTPServer.h"
@@ -62,6 +64,9 @@ void HTTPServer::Start() {
 
 	auto processor = [this](int Connection) {
 		TCPStream ClientStream(Connection);
+		std::ostringstream oss;
+		oss << "Server from thread " << std::this_thread::get_id();
+		Logging::Log("STATUS", oss.str());
 		HTTPLayer::HTTPRequest Request = HTTPLayer::HTTPParseRequest(ClientStream);
 		HTTPLayer::HTTPResponse(*CallbackFunction) (HTTPLayer::HTTPRequest) = FindCallback(Request.Path);
 		HTTPLayer::HTTPResponse Response = (*CallbackFunction)(Request);
